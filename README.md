@@ -16,13 +16,12 @@ OptiTrainer is designed to significantly enhance the training process and perfor
 
 ## Quick Start
 
-### 1. Clone the Repository and Install Dependencies
+### 1. Clone the Repository
 
 ```bash
 # Clone OptiTrainer
 https://github.com/Jackksonns/OptiTrainer.git
 cd OptiTrainer
-pip install -r TorchUtils/requirements.txt
 ```
 
 ### 2. Data Preparation
