@@ -100,7 +100,7 @@ cd OptiTrainer
 - `train.py`: Optimized training pipeline
 - `normal_train.py`: Standard training pipeline
 - `utils.py`: Utility functions (K-Fold, scheduler, etc.)
-- `TorchUtils/`: Deep learning training tricks and tools
+- `TorchUtils/`: Deep learning training tools
 - `data/`: Dataset directory
 
 ## Contact
