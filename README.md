@@ -118,9 +118,6 @@ cd OptiTrainer
   - Integrate additional training tricks and visualization tools
 
 ---
-
-For questions or suggestions, please contact the author via GitHub or submit an issue.
-
 ## Citation & Dependencies
 
 Some utility functions in OptiTrainer are adapted from [TorchUtils](https://github.com/seefun/TorchUtils).
@@ -136,5 +133,3 @@ cd TorchUtils
 pip install -r requirements.txt
 pip install .
 ```
-
-If you use OptiTrainer or TorchUtils in your research, please consider citing the original repositories.
