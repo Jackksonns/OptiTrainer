@@ -102,7 +102,6 @@ cd OptiTrainer
 - `utils.py`: Utility functions (K-Fold, scheduler, etc.)
 - `TorchUtils/`: Deep learning training tricks and tools
 - `data/`: Dataset directory
-- `训练优化函数使用说明.md`: Chinese documentation for training optimization functions
 
 ## Contact
 
