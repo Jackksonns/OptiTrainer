@@ -22,7 +22,6 @@ import ttach as tta
 from utils import *
 import torch_utils as tu
 
-#兼容版训练优化方法使用方法：只需要更换模型定义为您自己训练的模型，将数据集调整成对应格式，修改参数设置即可。
 
 class MyModel(nn.Module):
     def __init__(self):
@@ -103,3 +102,4 @@ def train():
         #目前不保存模型，仅看效果
 
 train()
+
