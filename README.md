@@ -100,7 +100,6 @@ cd OptiTrainer
 - `train.py`: Optimized training pipeline
 - `normal_train.py`: Standard training pipeline
 - `utils.py`: Utility functions (K-Fold, scheduler, etc.)
-- `TorchUtils/`: Deep learning training tools
 - `data/`: Dataset directory
 
 ## Contact
@@ -117,19 +116,3 @@ cd OptiTrainer
   - Provide more automated data/model adaptation
   - Integrate additional training tricks and visualization tools
 
----
-## Citation & Dependencies
-
-Some utility functions in OptiTrainer are adapted from [TorchUtils](https://github.com/seefun/TorchUtils).
-
-**Special thanks to the author of TorchUtils for their excellent open-source work.**
-
-**Before using OptiTrainer, please clone and install TorchUtils locally:**
-
-```bash
-# Clone TorchUtils
-https://github.com/seefun/TorchUtils.git
-cd TorchUtils
-pip install -r requirements.txt
-pip install .
-```
