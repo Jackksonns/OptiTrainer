@@ -24,8 +24,6 @@ import torchvision
 from torchvision import transforms
 from sklearn.model_selection import StratifiedKFold
 from sklearn.metrics import accuracy_score
-from utils import *
-from model import *
 
 # 配置config
 method = 'kfold_diverse'   # 'kfold_diverse' or 'snapshot'
@@ -51,7 +49,31 @@ snap_interval = 10         # 每多少 epoch 保存一个 snapshot
 
 
 # 固定种子
+def set_seed(s):
+    random.seed(s)
+    np.random.seed(s)
+    torch.manual_seed(s)
+    if torch.cuda.is_available():
+        torch.cuda.manual_seed_all(s)
+
 set_seed(SEED)
+
+
+# 模型定义（可修改为custom模型）
+class MyModel(nn.Module):
+    def __init__(self):
+        super().__init__()
+        self.conv = nn.Conv2d(3, 32, 3, padding=1)
+        self.relu = nn.ReLU()
+        self.pool = nn.AdaptiveAvgPool2d((8,8))
+        self.fc = nn.Linear(32*8*8, 10)
+    def forward(self, x):
+        x = self.conv(x)
+        x = self.relu(x)
+        x = self.pool(x)
+        x = x.view(x.size(0), -1)
+        return self.fc(x)
+
 
 # 数据 & transform variants（通过数据增强制造不同折的模型的多样性）
 # 一组可选的训练数据增强参数样例
@@ -76,6 +98,11 @@ torchvision.datasets.CIFAR10(root='./data', train=True, download=True)
 full_train_root = './data'
 test_set = torchvision.datasets.CIFAR10(root=full_train_root, train=False, download=True, transform=test_transform)
 
+# helper to get dataset with certain transform (train=True)
+def cifar10_with_transform(transform):
+    return torchvision.datasets.CIFAR10(root=full_train_root, train=True, download=False, transform=transform)
+
+# utilities
 def get_stratified_kfold_indices(labels, n_splits=5, random_state=SEED, shuffle=True):
     skf = StratifiedKFold(n_splits=n_splits, shuffle=shuffle, random_state=random_state)
     labels = np.array(labels)
@@ -84,6 +111,55 @@ def get_stratified_kfold_indices(labels, n_splits=5, random_state=SEED, shuffle=
         train_idxs_list.append(tr)
         val_idxs_list.append(vl)
     return train_idxs_list, val_idxs_list
+
+def get_best_model_paths(save_dir: str, n_splits: int) -> List[str]:
+    files = os.listdir(save_dir)
+    fold_best = {}
+    pattern = re.compile(r'fold(\d+)_epoch(\d+)_acc([0-9.]+)\.pth')
+    for f in files:
+        m = pattern.match(f)
+        if m:
+            fold_idx = int(m.group(1))
+            acc = float(m.group(3))
+            prev = fold_best.get(fold_idx)
+            if (prev is None) or (acc > prev[0]):
+                fold_best[fold_idx] = (acc, os.path.join(save_dir, f))
+    paths = []
+    for fold in range(n_splits):
+        if fold not in fold_best:
+            raise FileNotFoundError(f"No saved model for fold {fold} in {save_dir}")
+        paths.append(fold_best[fold][1])
+    return paths
+
+# 跑一次试试
+def train_one_epoch(model, dl, optimizer):
+    model.train()
+    total = 0; loss_sum = 0
+    for x,y in dl:
+        x,y = x.to(device), y.to(device)
+        optimizer.zero_grad()
+        out = model(x)
+        loss = F.cross_entropy(out, y)
+        loss.backward()
+        optimizer.step()
+        total += x.size(0)
+        loss_sum += loss.item() * x.size(0)
+    return loss_sum / total
+
+def eval_on_dl(model, dl):
+    model.eval()
+    total = 0; correct = 0; loss_sum = 0
+    with torch.no_grad():
+        for x,y in dl:
+            x,y = x.to(device), y.to(device)
+            out = model(x)
+            loss = F.cross_entropy(out, y)
+            preds = out.argmax(dim=1)
+            correct += (preds == y).sum().item()
+            total += x.size(0)
+            loss_sum += loss.item() * x.size(0)
+    return loss_sum/total, correct/total
+
 
 # 优化方法 A: K-fold + diversity
 def run_kfold_diverse():
@@ -104,8 +180,8 @@ def run_kfold_diverse():
         print(f"\n=== Fold {fold} | seed={seed} | augment_variant={fold % len(augment_variants)} ===")
 
         # train & val datasets with appropriate transforms
-        train_ds = Subset(cifar10_with_transform(aug, full_train_root), train_idxs_list[fold])
-        val_ds = Subset(cifar10_with_transform(test_transform, full_train_root), val_idxs_list[fold])
+        train_ds = Subset(cifar10_with_transform(aug), train_idxs_list[fold])
+        val_ds = Subset(cifar10_with_transform(test_transform), val_idxs_list[fold])
 
         train_dl = DataLoader(train_ds, batch_size=bs, shuffle=True, num_workers=4, pin_memory=True)
         val_dl = DataLoader(val_ds, batch_size=bs, shuffle=False, num_workers=4, pin_memory=True)
@@ -117,8 +193,8 @@ def run_kfold_diverse():
         best_acc = 0.0; best_loss = float('inf'); best_epoch = -1
 
         for epoch in range(1, num_epochs+1):
-            tr_loss = train_one_epoch(model, train_dl, optimizer, device)
-            val_loss, val_acc = eval_on_dl(model, val_dl, device)
+            tr_loss = train_one_epoch(model, train_dl, optimizer)
+            val_loss, val_acc = eval_on_dl(model, val_dl)
             scheduler.step()
             print(f"Fold{fold} Epoch {epoch}/{num_epochs} | tr_loss {tr_loss:.4f} | val_loss {val_loss:.4f} val_acc {val_acc:.4f}")
             if (val_acc > best_acc) or (val_acc == best_acc and val_loss < best_loss):

@@ -19,26 +19,21 @@ from torch.utils.data import DataLoader, Subset
 from sklearn.model_selection import KFold
 from torchvision import transforms, datasets
 import ttach as tta
-from utils import *
-import torch_utils as tu
 
-
+#可自定义模型架构
 class MyModel(nn.Module):
     def __init__(self):
-        super(MyModel, self).__init__()
-        self.conv2d = nn.Conv2d(3, 32, 3, 1, 1)
+        super().__init__()
+        self.conv = nn.Conv2d(3, 32, 3, padding=1)
         self.relu = nn.ReLU()
-        self.linear = nn.Linear(32 * 32 * 32, 10)
-
-        
+        self.pool = nn.AdaptiveAvgPool2d((8,8))
+        self.fc = nn.Linear(32*8*8, 10)
     def forward(self, x):
-        x = self.conv2d(x)
-        # print('after conv2d', x.shape)
+        x = self.conv(x)
         x = self.relu(x)
-        # print('after relu', x.shape)
-        x = self.linear(x.view(-1, 32 * 32 * 32))
-        # print('after linear', x.shape)
-        return x
+        x = self.pool(x)
+        x = x.view(x.size(0), -1)
+        return self.fc(x)
 
 
 train_set = torchvision.datasets.CIFAR10(root='./data', train=True, download=True, transform=transforms.ToTensor())
@@ -52,7 +47,7 @@ model = MyModel()
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 model.to(device)
 
-optimizer = torch.optim.Adam(model.parameters(), lr=1e-5)
+optimizer = torch.optim.Adam(model.parameters(), lr=3e-3)
 loss_fn = nn.CrossEntropyLoss()
 loss_fn.to(device)
 
@@ -102,4 +97,3 @@ def train():
         #目前不保存模型，仅看效果
 
 train()
-
