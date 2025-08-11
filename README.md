@@ -2,7 +2,7 @@
 
 ## Overview
 
-OptiTrainer is an advanced training framework designed to enhance the performance and robustness of deep learning models, with a primary focus on image classification tasks. This framework integrates multiple state-of-the-art training strategies, demonstrating significant accuracy improvements (up to 7%) on standard datasets such as CIFAR-10 compared to conventional training approaches.
+OptiTrainer is an advanced training framework designed to enhance the performance and robustness of deep learning models, with a primary focus on image classification tasks. This framework integrates multiple advanced training strategies, demonstrating significant accuracy improvements (up to 7%) on standard datasets such as CIFAR-10 compared to conventional training approaches.
 
 ## Key Features
 
@@ -107,7 +107,7 @@ else:
 
 ## Experimental Results
 
-- On CIFAR-10 dataset, OptiTrainer demonstrates up to 7% higher accuracy (72% vs. 65%) compared to standard training pipelines with the same model architecture and training duration
+- On CIFAR-10 dataset, OptiTrainer demonstrates up to 7% higher accuracy (72% vs. 65%) compared to standard training pipelines with the same model architecture and training duration(with same init lr and epochs)
 
 - ```bash
   #mormal training process  --result
@@ -147,10 +147,7 @@ else:
 
 - **Current limitations:**
   - Primary focus on image classification tasks(more experiments are needed for different tasks)
-  - Manual configuration required for custom datasets
 
 - **Future directions:**
   - Extension to object detection, segmentation, and other computer vision tasks
   - Automated hyperparameter optimization
-  - Integration of additional regularization techniques and visualization tools
-  - Support for transfer learning scenarios
