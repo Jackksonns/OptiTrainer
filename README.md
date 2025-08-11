@@ -2,7 +2,7 @@
 
 ## Overview
 
-OptiTrainer is an advanced training framework designed to enhance the performance and robustness of deep learning models, with a primary focus on image classification tasks. This framework integrates multiple state-of-the-art training strategies, demonstrating significant accuracy improvements (up to 20%) on standard datasets such as CIFAR-10 compared to conventional training approaches.
+OptiTrainer is an advanced training framework designed to enhance the performance and robustness of deep learning models, with a primary focus on image classification tasks. This framework integrates multiple state-of-the-art training strategies, demonstrating significant accuracy improvements (up to 7%) on standard datasets such as CIFAR-10 compared to conventional training approaches.
 
 ## Key Features
 
