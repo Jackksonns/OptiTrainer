@@ -1,5 +1,5 @@
 # OptiTrainer: Optimized Training Pipeline for Deep Learning
-
+[![GitHub](https://img.shields.io/badge/GitHub-Jackksonns-blue?style=flat-square&logo=github)](https://github.com/Jackksonns)
 ## Overview
 
 OptiTrainer is an advanced training framework designed to enhance the performance and robustness of deep learning models, with a primary focus on image classification tasks. This framework integrates multiple advanced training strategies, demonstrating significant accuracy improvements (up to 7%) on standard datasets such as CIFAR-10 compared to conventional training approaches.
