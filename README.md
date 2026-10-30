@@ -141,7 +141,7 @@ else:
 
 ## Contact
 
-- Author GitHub: https://github.com/Jackksonns
+- Author: [Jackson ZHOU](https://github.com/Jackksonns)
 
 ## Limitations & Future Work
 
